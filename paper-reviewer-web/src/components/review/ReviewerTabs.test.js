@@ -1,0 +1,2 @@
+import{mount}from'@vue/test-utils';import{describe,expect,it}from'vitest';import ReviewerTabs from './ReviewerTabs.vue';
+describe('ReviewerTabs',()=>{it('switches the active reviewer',async()=>{const wrapper=mount(ReviewerTabs,{props:{roles:['EIC','DOMAIN'],modelValue:'EIC'}});await wrapper.findAll('button')[1].trigger('click');expect(wrapper.emitted('update:modelValue')[0]).toEqual(['DOMAIN']);});});

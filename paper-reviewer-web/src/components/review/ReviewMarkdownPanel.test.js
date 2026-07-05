@@ -1,0 +1,2 @@
+import{mount}from'@vue/test-utils';import{describe,expect,it}from'vitest';import ReviewMarkdownPanel from './ReviewMarkdownPanel.vue';
+describe('ReviewMarkdownPanel',()=>{it('renders markdown and strips executable markup',()=>{const wrapper=mount(ReviewMarkdownPanel,{props:{content:'# Review\n<script>alert(1)</script>\n**Useful**'}});expect(wrapper.find('h1').text()).toBe('Review');expect(wrapper.find('script').exists()).toBe(false);expect(wrapper.text()).toContain('Useful');});});

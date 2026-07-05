@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: paper-reviewer-server
+  jackson:
+    time-zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/paper_reviewer?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    # Database/schema creation is managed manually with db/paper_reviewer.sql.
+    enabled: false
+  ai:
+    model:
+      chat: openai
+    openai:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        model: qwen3.5-plus
+        # Full-paper reviews can take several minutes; Spring AI defaults to only 60 seconds.
+        timeout: 10m
+
+app:
+  storage:
+    paper-root: storage/papers
+    export-root: storage/exports
+  upload:
+    max-file-size-mb: 20
+    max-page-count: 300
+    max-user-storage-mb: 500
+  jwt:
+    secret: ${JWT_SECRET:paper-reviewer-local-development-secret-change-me}
+    expiration-minutes: 1440
+  ai:
+    provider: qwen
+    qwen:
+      api-key: ${OPENAI_API_KEY}
+      model: qwen3.5-plus
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+#      base-url: https://ws-q0h41254hapaheab.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+    openai:
+      enabled: false
+      api-key: ""
+      model: ""
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: com.paper.reviewer.database.typehandler

@@ -1,0 +1,3 @@
+<script setup>defineProps({ scores: { type: [Object, Array], default: () => ({}) } })</script>
+<template><div v-if="Object.keys(scores || {}).length" class="scores"><h3>Dimension scores</h3><div v-for="(value,key) in scores" :key="key" class="score"><span>{{ key }}</span><meter min="0" max="100" :value="typeof value==='object'?value.score:value"/><strong>{{ typeof value==='object'?value.score:value }}</strong></div></div></template>
+<style scoped>.scores{border-top:1px solid #d9d7ce;padding-top:24px}.scores h3{font-family:'Newsreader',serif}.score{display:grid;grid-template-columns:minmax(120px,1fr) 2fr 36px;gap:12px;align-items:center;margin:10px 0;font-size:.84rem}.score meter{width:100%;accent-color:#174b38}</style>

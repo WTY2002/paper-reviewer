@@ -1,0 +1,8 @@
+package com.paper.reviewer.history;
+import com.paper.reviewer.auth.security.AuthenticatedUser;import com.paper.reviewer.common.ApiResponse;import com.paper.reviewer.common.PageResult;import com.paper.reviewer.paper.domain.Paper;import com.paper.reviewer.review.domain.Review;import org.springframework.security.core.annotation.AuthenticationPrincipal;import org.springframework.web.bind.annotation.*;import java.util.List;
+@RestController @RequestMapping("/api/history") public class HistoryController{private final HistoryService service;public HistoryController(HistoryService service){this.service=service;}
+ @GetMapping("/papers") public ApiResponse<PageResult<Paper>> papers(@AuthenticationPrincipal AuthenticatedUser user,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return ApiResponse.success(slice(service.papers(user.userId()),page,size));}
+ @GetMapping("/reviews") public ApiResponse<PageResult<Review>> reviews(@AuthenticationPrincipal AuthenticatedUser user,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return ApiResponse.success(slice(service.reviews(user.userId()),page,size));}
+ @GetMapping("/papers/{paperId}") public ApiResponse<HistoryPaperDetail> detail(@AuthenticationPrincipal AuthenticatedUser user,@PathVariable long paperId){return ApiResponse.success(service.detail(user.userId(),paperId));}
+ private <T> PageResult<T> slice(List<T> values,int page,int size){if(page<0||size<1||size>100)throw new IllegalArgumentException("Invalid pagination");long offset=(long)page*size;int from=(int)Math.min(values.size(),offset);int to=Math.min(values.size(),from+size);return PageResult.of(values.subList(from,to),values.size(),page,size);}
+}
