@@ -55,7 +55,6 @@ public class ExportService {
     }
     public Resource download(long userId,long exportId){ReviewExport value=exports.findOwnedById(userId,exportId).orElseThrow(()->new BusinessException(ErrorCode.EXPORT_FAILED,"Export not found or access denied"));Path path=storage.readableExport(Path.of(value.filePath()));return new FileSystemResource(path);}
     public ReviewExport get(long userId,long exportId){return exports.findOwnedById(userId,exportId).orElseThrow(()->new BusinessException(ErrorCode.EXPORT_FAILED,"Export not found or access denied"));}
-    public void deleteByReview(long userId,long reviewId){for(ReviewExport value:exports.findByReview(userId,reviewId))storage.deleteFile(Path.of(value.filePath()));exports.deleteByReview(userId,reviewId);storage.deleteDirectory(storage.exportDirectory(userId,reviewId));}
 
     String reviewMarkdown(Paper paper,Review review){
         StringBuilder out=new StringBuilder("# Academic Peer Review\n\n## Paper Information\n\n- **Title:** ").append(paper.title()).append("\n- **Review type:** ").append(review.reviewType()).append("\n\n");

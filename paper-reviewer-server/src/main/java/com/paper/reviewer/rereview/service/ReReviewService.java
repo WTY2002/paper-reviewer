@@ -87,9 +87,6 @@ public class ReReviewService {
         return rereviews.findOwnedById(userId, rereviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
     }
-    public void delete(long userId, long rereviewId) {
-        if (!rereviews.deleteOwnedById(userId, rereviewId)) throw new BusinessException(ErrorCode.REVIEW_NOT_FOUND);
-    }
     private String extracted(long paperId) { return extractions.findByPaperId(paperId)
             .map(value -> value.extractedText()).filter(value -> value != null && !value.isBlank())
             .orElseThrow(() -> new BusinessException(ErrorCode.PDF_EXTRACTION_FAILED)); }

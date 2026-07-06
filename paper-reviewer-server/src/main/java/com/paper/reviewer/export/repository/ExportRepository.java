@@ -9,5 +9,4 @@ public interface ExportRepository {
     Optional<ReviewExport> findOwnedById(long userId, long exportId);
     List<ReviewExport> findByReview(long userId, long reviewId);
     void deleteByReview(long userId, long reviewId);
-    boolean deleteOwnedById(long userId, long exportId);
 }

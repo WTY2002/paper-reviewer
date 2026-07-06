@@ -1,9 +1,9 @@
 package com.paper.reviewer.database;
 
-import com.paper.reviewer.database.entity.ReviewEntity;
-import com.paper.reviewer.database.entity.UserEntity;
-import com.paper.reviewer.database.mapper.ReviewMapper;
-import com.paper.reviewer.database.mapper.UserMapper;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewEntity;
+import com.paper.reviewer.user.infrastructure.persistence.UserEntity;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewMapper;
+import com.paper.reviewer.user.infrastructure.persistence.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DatabasePersistenceTests {
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @MapperScan("com.paper.reviewer.database.mapper")
+    @MapperScan("com.paper.reviewer")
     static class TestApplication {
     }
 
@@ -39,7 +39,7 @@ class DatabasePersistenceTests {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void flywayCreatesAllNineTables() {
+    void schemaCreatesAllNineTables() {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*) FROM information_schema.tables
                 WHERE table_schema = 'public'
@@ -51,7 +51,7 @@ class DatabasePersistenceTests {
     }
 
     @Test
-    void repositoryInsertsReadsAndLogicallyDeletes() {
+    void repositoryInsertsReadsAndPhysicallyDeletes() {
         UserEntity user = new UserEntity();
         user.setEmail("researcher@example.com");
         user.setPasswordHash("hash");
@@ -65,9 +65,9 @@ class DatabasePersistenceTests {
 
         assertThat(userMapper.deleteById(user.getId())).isEqualTo(1);
         assertThat(userMapper.selectById(user.getId())).isNull();
-        LocalDateTime deletedAt = jdbcTemplate.queryForObject(
-                "SELECT deleted_at FROM users WHERE id = ?", LocalDateTime.class, user.getId());
-        assertThat(deletedAt).isNotNull();
+        Integer remaining = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE id = ?", Integer.class, user.getId());
+        assertThat(remaining).isZero();
     }
 
     @Test

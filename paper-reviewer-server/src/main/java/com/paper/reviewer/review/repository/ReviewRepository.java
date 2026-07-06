@@ -9,5 +9,6 @@ public interface ReviewRepository {
     Review update(Review review);
     Optional<Review> findOwnedById(long userId, long reviewId);
     List<Review> findAllOwnedBy(long userId);
+    long countOwnedByPaperId(long userId, long paperId);
     boolean deleteOwnedById(long userId, long reviewId);
 }

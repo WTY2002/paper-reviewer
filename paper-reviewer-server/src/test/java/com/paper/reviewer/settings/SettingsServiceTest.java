@@ -1,8 +1,7 @@
 package com.paper.reviewer.settings;
 
-import com.paper.reviewer.config.AiModelProperties;
-import com.paper.reviewer.database.entity.UserEntity;
-import com.paper.reviewer.database.mapper.UserMapper;
+import com.paper.reviewer.user.infrastructure.persistence.UserEntity;
+import com.paper.reviewer.user.infrastructure.persistence.UserMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,14 +10,12 @@ import static org.mockito.Mockito.*;
 
 class SettingsServiceTest {
     private final UserMapper users = mock(UserMapper.class);
-    private final SettingsService service = new SettingsService(users,
-            new AiModelProperties("qwen", new AiModelProperties.Qwen("secret", "qwen-plus", "https://example.invalid/v1"), new AiModelProperties.OpenAi(false, "hidden", "gpt")));
+    private final SettingsService service = new SettingsService(users, "qwen-plus");
 
-    @Test void returnsModelStatusWithoutAnyApiKey() {
+    @Test void returnsConfiguredModel() {
         UserEntity user = user(); when(users.selectById(1L)).thenReturn(user);
         SettingsResponse result = service.get(1L);
-        assertThat(result.provider()).isEqualTo("qwen"); assertThat(result.openAiEnabled()).isFalse();
-        assertThat(result.toString()).doesNotContain("secret", "hidden");
+        assertThat(result.model()).isEqualTo("qwen-plus");
     }
 
     @Test void updatesAllowedPreferences() {

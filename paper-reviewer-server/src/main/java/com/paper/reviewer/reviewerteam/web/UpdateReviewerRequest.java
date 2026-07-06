@@ -10,4 +10,9 @@ public record UpdateReviewerRequest(
         @NotBlank String identityDescription,
         String expertise,
         @NotBlank String reviewFocus
-) {}
+) {
+    public com.paper.reviewer.reviewerteam.service.UpdateReviewerCommand toCommand() {
+        return new com.paper.reviewer.reviewerteam.service.UpdateReviewerCommand(
+                role, displayName, identityDescription, expertise, reviewFocus);
+    }
+}

@@ -12,9 +12,6 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
-  flyway:
-    # Database/schema creation is managed manually with db/paper_reviewer.sql.
-    enabled: false
   ai:
     model:
       chat: openai
@@ -37,19 +34,7 @@ app:
   jwt:
     secret: ${JWT_SECRET:paper-reviewer-local-development-secret-change-me}
     expiration-minutes: 1440
-  ai:
-    provider: qwen
-    qwen:
-      api-key: ${OPENAI_API_KEY}
-      model: qwen3.5-plus
-      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-#      base-url: https://ws-q0h41254hapaheab.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
-    openai:
-      enabled: false
-      api-key: ""
-      model: ""
-
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-  type-handlers-package: com.paper.reviewer.database.typehandler
+  type-handlers-package: com.paper.reviewer.common.persistence

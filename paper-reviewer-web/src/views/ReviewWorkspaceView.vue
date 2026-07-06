@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { paperApi } from '../api/paperApi'
 import { reviewApi } from '../api/reviewApi'
@@ -7,7 +7,6 @@ import { rereviewApi } from '../api/rereviewApi'
 import { useReviewStore } from '../stores/reviewStore'
 import { useWorkflowStore } from '../stores/workflowStore'
 import { subscribeToReview } from '../stream/reviewEventSource'
-import PdfViewer from '../components/paper/PdfViewer.vue'
 import ReviewerTeamEditor from '../components/review/ReviewerTeamEditor.vue'
 import ReviewerTabs from '../components/review/ReviewerTabs.vue'
 import ReviewMarkdownPanel from '../components/review/ReviewMarkdownPanel.vue'
@@ -15,6 +14,8 @@ import ScoreTable from '../components/review/ScoreTable.vue'
 import WorkflowBar from '../components/review/WorkflowBar.vue'
 import VerificationChecklist from '../components/rereview/VerificationChecklist.vue'
 import ExportActions from '../components/review/ExportActions.vue'
+
+const PdfViewer=defineAsyncComponent(()=>import('../components/paper/PdfViewer.vue'))
 
 const route = useRoute(); const reviewStore = useReviewStore(); const workflow = useWorkflowStore()
 const pdfSource = ref(); const team = ref(); const selectedRole = ref('EIC'); const activePane = ref('REVIEW'); const loading = ref(true); const saving = ref(false); const error = ref(''); let stopStream; let blobUrl

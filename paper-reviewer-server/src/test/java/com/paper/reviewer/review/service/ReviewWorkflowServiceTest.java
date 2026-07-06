@@ -95,7 +95,7 @@ class ReviewWorkflowServiceTest {
         verify(events).publishFailure(failed.id(), "REVIEWING", "provider down");
     }
 
-    @Test void fullCannotStartBeforeConfirmedAndOtherUsersCannotReadOrDelete() {
+    @Test void fullCannotStartBeforeConfirmedAndOtherUsersCannotRead() {
         LocalDateTime now = LocalDateTime.now(clock);
         Review pending = reviews.save(new Review(null, 7, 11, ReviewType.FULL, ReviewStatus.TEAM_PENDING,
                 "en", "en", null, null, null, null, null, now, now));
@@ -103,8 +103,6 @@ class ReviewWorkflowServiceTest {
         assertThatThrownBy(() -> service.start(7, pending.id())).isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException)e).getErrorCode()).isEqualTo(ErrorCode.REVIEW_TEAM_NOT_CONFIRMED);
         assertThatThrownBy(() -> service.get(8, pending.id())).isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException)e).getErrorCode()).isEqualTo(ErrorCode.REVIEW_NOT_FOUND);
-        assertThatThrownBy(() -> service.delete(8, pending.id())).isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException)e).getErrorCode()).isEqualTo(ErrorCode.REVIEW_NOT_FOUND);
     }
 
@@ -145,6 +143,7 @@ class ReviewWorkflowServiceTest {
         public Review update(Review r) { values.put(r.id(), r); return r; }
         public Optional<Review> findOwnedById(long userId, long id) { return Optional.ofNullable(values.get(id)).filter(r -> r.userId() == userId); }
         public List<Review> findAllOwnedBy(long userId) { return values.values().stream().filter(r -> r.userId() == userId).toList(); }
+        public long countOwnedByPaperId(long userId, long paperId) { return values.values().stream().filter(r -> r.userId() == userId && r.paperId() == paperId).count(); }
         public boolean deleteOwnedById(long userId, long id) { return findOwnedById(userId, id).map(r -> values.remove(id) != null).orElse(false); }
         private Review copy(Review r, long id) { return new Review(id, r.userId(), r.paperId(), r.reviewType(), r.status(), r.sourceLanguage(), r.outputLanguage(), r.fieldAnalysis(), r.editorialDecisionMarkdown(), r.revisionRoadmapMarkdown(), r.authorQuestionsMarkdown(), r.errorMessage(), r.createdAt(), r.updatedAt()); }
     }

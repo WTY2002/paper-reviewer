@@ -9,9 +9,9 @@ import com.paper.reviewer.auth.web.AuthController;
 import com.paper.reviewer.config.JwtProperties;
 import com.paper.reviewer.config.SecurityConfig;
 import com.paper.reviewer.common.GlobalExceptionHandler;
-import com.paper.reviewer.database.entity.UserEntity;
-import com.paper.reviewer.database.mapper.UserMapper;
-import com.paper.reviewer.user.repository.MyBatisUserRepository;
+import com.paper.reviewer.user.infrastructure.persistence.UserEntity;
+import com.paper.reviewer.user.infrastructure.persistence.UserMapper;
+import com.paper.reviewer.user.infrastructure.persistence.MyBatisUserRepository;
 import org.mybatis.spring.annotation.MapperScan;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -114,17 +114,6 @@ class AuthIntegrationTest {
         mockMvc.perform(get("/api/auth/me").header("Authorization", "Bearer invalid.jwt.token"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("AUTH_TOKEN_INVALID"));
-    }
-
-    @Test
-    void logoutRequiresAValidTokenAndIsStateless() throws Exception {
-        String registration = registerUser();
-        JsonNode body = objectMapper.readTree(registration);
-        String token = body.path("data").path("token").asText();
-
-        mockMvc.perform(post("/api/auth/logout").header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
     }
 
     private String registerUser() throws Exception {

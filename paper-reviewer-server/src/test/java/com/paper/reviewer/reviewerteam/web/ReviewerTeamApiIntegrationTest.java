@@ -1,7 +1,7 @@
 package com.paper.reviewer.reviewerteam.web;
 
-import com.paper.reviewer.database.entity.ReviewEntity;
-import com.paper.reviewer.database.mapper.ReviewMapper;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewEntity;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewMapper;
 import com.paper.reviewer.reviewerteam.domain.Reviewer;
 import com.paper.reviewer.reviewerteam.domain.ReviewerRole;
 import com.paper.reviewer.reviewerteam.domain.ReviewerTeam;

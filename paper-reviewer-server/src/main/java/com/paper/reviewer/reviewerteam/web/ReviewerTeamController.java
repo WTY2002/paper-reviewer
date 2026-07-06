@@ -31,7 +31,7 @@ public class ReviewerTeamController {
     public ApiResponse<ReviewerTeamResponse> edit(@AuthenticationPrincipal AuthenticatedUser user,
                                                   @PathVariable long reviewId,
                                                   @Valid @RequestBody UpdateReviewerTeamRequest request) {
-        ReviewerTeamService.TeamWithStatus result = service.edit(user.userId(), reviewId, request);
+        ReviewerTeamService.TeamWithStatus result = service.edit(user.userId(), reviewId, request.toCommand());
         return ApiResponse.success(ReviewerTeamResponse.from(result.team(), result.status()));
     }
 

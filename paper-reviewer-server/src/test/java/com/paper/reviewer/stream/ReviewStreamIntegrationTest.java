@@ -1,7 +1,7 @@
 package com.paper.reviewer.stream;
 
-import com.paper.reviewer.database.entity.ReviewEntity;
-import com.paper.reviewer.database.mapper.ReviewMapper;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewEntity;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewMapper;
 import com.paper.reviewer.stream.domain.ReviewEvent;
 import com.paper.reviewer.stream.domain.ReviewEventType;
 import com.paper.reviewer.stream.service.ReviewEventService;
@@ -59,7 +59,8 @@ class ReviewStreamIntegrationTest {
             List<Callable<ReviewEvent>> tasks = new ArrayList<>();
             for (int i = 0; i < eventCount; i++) {
                 int index = i;
-                tasks.add(() -> eventService.publishDelta(REVIEW_ID, "REVIEWING", "EIC", "part-" + index));
+                tasks.add(() -> eventService.publish(REVIEW_ID, ReviewEventType.REVIEWER_REPORT_STARTED,
+                        "REVIEWING", "EIC", objectMapper.createObjectNode().put("index", index)));
             }
             List<Future<ReviewEvent>> futures = executor.invokeAll(tasks);
             for (Future<ReviewEvent> future : futures) future.get();
@@ -72,8 +73,8 @@ class ReviewStreamIntegrationTest {
         assertThat(history).extracting(ReviewEvent::sequence)
                 .containsExactlyElementsOf(java.util.stream.LongStream.rangeClosed(1, eventCount).boxed().toList());
         assertThat(history).allSatisfy(event -> {
-            assertThat(event.type()).isEqualTo(ReviewEventType.REVIEWER_REPORT_DELTA);
-            assertThat(event.payload().path("text").asText()).startsWith("part-");
+            assertThat(event.type()).isEqualTo(ReviewEventType.REVIEWER_REPORT_STARTED);
+            assertThat(event.payload().path("index").isInt()).isTrue();
         });
     }
 

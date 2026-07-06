@@ -2,10 +2,6 @@ import { defineStore } from 'pinia'
 
 export const useWorkflowStore = defineStore('workflow', {
   state: () => ({ events: [], connected: false, error: null }),
-  getters: {
-    latest: (state) => state.events[state.events.length - 1] || null,
-    stage: (state) => state.events[state.events.length - 1]?.stage || 'CREATED',
-  },
   actions: {
     add(event) {
       if (this.events.some((item) => item.sequence === event.sequence)) return

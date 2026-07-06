@@ -5,9 +5,7 @@ CREATE TABLE users (
   display_name VARCHAR(100),
   default_output_language VARCHAR(20),
   created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL,
-  deleted_at DATETIME NULL,
-  INDEX idx_users_deleted_at (deleted_at)
+  updated_at DATETIME NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE papers (
@@ -22,9 +20,7 @@ CREATE TABLE papers (
   status VARCHAR(50) NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  deleted_at DATETIME NULL,
-  INDEX idx_papers_user_id (user_id),
-  INDEX idx_papers_deleted_at (deleted_at)
+  INDEX idx_papers_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE paper_extractions (
@@ -54,11 +50,9 @@ CREATE TABLE reviews (
   error_message TEXT,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  deleted_at DATETIME NULL,
   INDEX idx_reviews_user_id (user_id),
   INDEX idx_reviews_paper_id (paper_id),
-  INDEX idx_reviews_status (status),
-  INDEX idx_reviews_deleted_at (deleted_at)
+  INDEX idx_reviews_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE reviewer_teams (
@@ -78,8 +72,6 @@ CREATE TABLE review_reports (
   reviewer_role VARCHAR(50) NOT NULL,
   content_markdown LONGTEXT,
   scores_json JSON,
-  recommendation VARCHAR(50),
-  confidence_score INT,
   status VARCHAR(50) NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
@@ -113,12 +105,10 @@ CREATE TABLE rereviews (
   error_message TEXT,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  deleted_at DATETIME NULL,
   INDEX idx_rereviews_user_id (user_id),
   INDEX idx_rereviews_original_review_id (original_review_id),
   INDEX idx_rereviews_revised_paper_id (revised_paper_id),
-  INDEX idx_rereviews_response_paper_id (response_paper_id),
-  INDEX idx_rereviews_deleted_at (deleted_at)
+  INDEX idx_rereviews_response_paper_id (response_paper_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE exports (
@@ -131,11 +121,9 @@ CREATE TABLE exports (
   status VARCHAR(50) NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  deleted_at DATETIME NULL,
   INDEX idx_exports_user_id (user_id),
   INDEX idx_exports_review_id (review_id),
-  INDEX idx_exports_rereview_id (rereview_id),
-  INDEX idx_exports_deleted_at (deleted_at)
+  INDEX idx_exports_rereview_id (rereview_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE papers ADD CONSTRAINT fk_papers_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;

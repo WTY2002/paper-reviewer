@@ -2,10 +2,10 @@ package com.paper.reviewer.settings;
 
 import com.paper.reviewer.common.BusinessException;
 import com.paper.reviewer.common.ErrorCode;
-import com.paper.reviewer.config.AiModelProperties;
-import com.paper.reviewer.database.entity.UserEntity;
-import com.paper.reviewer.database.mapper.UserMapper;
+import com.paper.reviewer.user.infrastructure.persistence.UserEntity;
+import com.paper.reviewer.user.infrastructure.persistence.UserMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -15,9 +15,13 @@ import java.util.Set;
 public class SettingsService {
     private static final Set<String> LANGUAGES = Set.of("AUTO", "zh", "en");
     private final UserMapper users;
-    private final AiModelProperties ai;
+    private final String model;
 
-    public SettingsService(UserMapper users, AiModelProperties ai) { this.users = users; this.ai = ai; }
+    public SettingsService(UserMapper users,
+                           @Value("${spring.ai.openai.chat.model:qwen3.5-plus}") String model) {
+        this.users = users;
+        this.model = model;
+    }
 
     public SettingsResponse get(long userId) { return response(requiredUser(userId)); }
 
@@ -44,7 +48,7 @@ public class SettingsService {
 
     private String normalizeLanguage(String value) { return value.equalsIgnoreCase("auto") ? "AUTO" : value.toLowerCase(Locale.ROOT); }
     private SettingsResponse response(UserEntity user) {
-        return new SettingsResponse(user.getEmail(), user.getDisplayName(), user.getDefaultOutputLanguage() == null ? "AUTO" : user.getDefaultOutputLanguage(),
-                ai.provider() == null ? "qwen" : ai.provider(), ai.qwen() == null ? null : ai.qwen().model(), ai.openai() != null && ai.openai().enabled());
+        return new SettingsResponse(user.getEmail(), user.getDisplayName(),
+                user.getDefaultOutputLanguage() == null ? "AUTO" : user.getDefaultOutputLanguage(), model);
     }
 }

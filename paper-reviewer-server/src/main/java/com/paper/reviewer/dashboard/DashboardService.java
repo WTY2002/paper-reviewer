@@ -1,10 +1,10 @@
 package com.paper.reviewer.dashboard;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.paper.reviewer.database.entity.PaperEntity;
-import com.paper.reviewer.database.entity.ReviewEntity;
-import com.paper.reviewer.database.mapper.PaperMapper;
-import com.paper.reviewer.database.mapper.ReviewMapper;
+import com.paper.reviewer.paper.infrastructure.persistence.PaperEntity;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewEntity;
+import com.paper.reviewer.paper.infrastructure.persistence.PaperMapper;
+import com.paper.reviewer.review.infrastructure.persistence.ReviewMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

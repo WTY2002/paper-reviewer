@@ -24,6 +24,4 @@ public class ReReviewController {
     public ApiResponse<ReReviewResponse> start(@AuthenticationPrincipal AuthenticatedUser user,@PathVariable long rereviewId){return ApiResponse.success(ReReviewResponse.from(service.start(user.userId(),rereviewId)));}
     @GetMapping("/api/rereviews/{rereviewId}")
     public ApiResponse<ReReviewResponse> get(@AuthenticationPrincipal AuthenticatedUser user,@PathVariable long rereviewId){return ApiResponse.success(ReReviewResponse.from(service.get(user.userId(),rereviewId)));}
-    @DeleteMapping("/api/rereviews/{rereviewId}")
-    public ApiResponse<Void> delete(@AuthenticationPrincipal AuthenticatedUser user,@PathVariable long rereviewId){service.delete(user.userId(),rereviewId);return ApiResponse.success(null);}
 }

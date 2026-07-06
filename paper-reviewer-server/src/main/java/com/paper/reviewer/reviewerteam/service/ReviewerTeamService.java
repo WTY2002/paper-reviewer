@@ -5,8 +5,6 @@ import com.paper.reviewer.common.ErrorCode;
 import com.paper.reviewer.reviewerteam.domain.Reviewer;
 import com.paper.reviewer.reviewerteam.domain.ReviewerTeam;
 import com.paper.reviewer.reviewerteam.repository.ReviewerTeamRepository;
-import com.paper.reviewer.reviewerteam.web.UpdateReviewerRequest;
-import com.paper.reviewer.reviewerteam.web.UpdateReviewerTeamRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +62,7 @@ public class ReviewerTeamService {
     }
 
     @Transactional
-    public TeamWithStatus edit(long userId, long reviewId, UpdateReviewerTeamRequest request) {
+    public TeamWithStatus edit(long userId, long reviewId, UpdateReviewerTeamCommand request) {
         ReviewerTeamReviewAccess.ReviewState review = owned(userId, reviewId);
         requireStatus(review, TEAM_PENDING);
         ReviewerTeam current = team(reviewId);
@@ -95,7 +93,7 @@ public class ReviewerTeamService {
         return confirmed;
     }
 
-    private Reviewer merge(ReviewerTeam current, UpdateReviewerRequest candidate) {
+    private Reviewer merge(ReviewerTeam current, UpdateReviewerCommand candidate) {
         Reviewer existing = current.reviewers().stream()
                 .filter(reviewer -> reviewer.role() == candidate.role()).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Reviewer roles cannot be changed"));
@@ -109,12 +107,12 @@ public class ReviewerTeamService {
                 existing.expertise(), candidate.reviewFocus());
     }
 
-    private void validateRequestedRoles(List<UpdateReviewerRequest> requested) {
+    private void validateRequestedRoles(List<UpdateReviewerCommand> requested) {
         if (requested.size() != com.paper.reviewer.reviewerteam.domain.ReviewerRole.values().length) {
             throw new IllegalArgumentException("Reviewer team must contain exactly five reviewers");
         }
         Set<com.paper.reviewer.reviewerteam.domain.ReviewerRole> roles = requested.stream()
-                .map(UpdateReviewerRequest::role).collect(Collectors.toSet());
+                .map(UpdateReviewerCommand::role).collect(Collectors.toSet());
         if (roles.size() != requested.size()
                 || roles.size() != com.paper.reviewer.reviewerteam.domain.ReviewerRole.values().length) {
             throw new IllegalArgumentException("Reviewer roles cannot be changed");

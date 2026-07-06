@@ -19,5 +19,5 @@ class ExportServiceTest {
     @Test void downloadRejectsOtherUsers(){when(exports.findOwnedById(9,44)).thenReturn(Optional.empty());assertThatThrownBy(()->service.download(9,44)).isInstanceOf(BusinessException.class);}
     private Paper paper(){return new Paper(1L,1L,"Research","paper.pdf","x",10,2,"en","EXTRACTED",LocalDateTime.now(),LocalDateTime.now());}
     private Review review(ReviewType type){return new Review(2L,1,1,type,ReviewStatus.COMPLETED,"en","en",null,"Decision","Roadmap","Questions",null,LocalDateTime.now(),LocalDateTime.now());}
-    private ReviewReport report(String role){return new ReviewReport(null,2,role,"Report "+role,null,null,null,"COMPLETED",LocalDateTime.now(),LocalDateTime.now());}
+    private ReviewReport report(String role){return new ReviewReport(null,2,role,"Report "+role,null,"COMPLETED",LocalDateTime.now(),LocalDateTime.now());}
 }

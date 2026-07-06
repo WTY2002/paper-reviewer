@@ -6,8 +6,8 @@ import com.paper.reviewer.reviewerteam.domain.Reviewer;
 import com.paper.reviewer.reviewerteam.domain.ReviewerRole;
 import com.paper.reviewer.reviewerteam.domain.ReviewerTeam;
 import com.paper.reviewer.reviewerteam.repository.ReviewerTeamRepository;
-import com.paper.reviewer.reviewerteam.web.UpdateReviewerRequest;
-import com.paper.reviewer.reviewerteam.web.UpdateReviewerTeamRequest;
+import com.paper.reviewer.reviewerteam.service.UpdateReviewerCommand;
+import com.paper.reviewer.reviewerteam.service.UpdateReviewerTeamCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,12 +39,12 @@ class ReviewerTeamServiceTest {
 
     @Test
     void editsOnlyVenueIdentityAndFocus() {
-        List<UpdateReviewerRequest> edits = team().reviewers().stream()
-                .map(r -> new UpdateReviewerRequest(r.role(), r.displayName(), "new " + r.role(),
+        List<UpdateReviewerCommand> edits = team().reviewers().stream()
+                .map(r -> new UpdateReviewerCommand(r.role(), r.displayName(), "new " + r.role(),
                         r.expertise(), "focus " + r.role())).toList();
 
         ReviewerTeamService.TeamWithStatus result = service.edit(7L, 10L,
-                new UpdateReviewerTeamRequest("New Venue", edits));
+                new UpdateReviewerTeamCommand("New Venue", edits));
 
         assertThat(result.team().targetVenue()).isEqualTo("New Venue");
         assertThat(result.team().reviewers()).allSatisfy(r -> {
@@ -57,30 +57,30 @@ class ReviewerTeamServiceTest {
 
     @Test
     void rejectsChangingImmutableReviewerFields() {
-        List<UpdateReviewerRequest> edits = requests();
-        UpdateReviewerRequest eic = edits.get(0);
-        edits.set(0, new UpdateReviewerRequest(eic.role(), "forged", eic.identityDescription(),
+        List<UpdateReviewerCommand> edits = requests();
+        UpdateReviewerCommand eic = edits.get(0);
+        edits.set(0, new UpdateReviewerCommand(eic.role(), "forged", eic.identityDescription(),
                 eic.expertise(), eic.reviewFocus()));
 
-        assertRequestRejected(new UpdateReviewerTeamRequest("Venue", edits), "displayName");
+        assertRequestRejected(new UpdateReviewerTeamCommand("Venue", edits), "displayName");
 
         edits = requests();
         eic = edits.get(0);
-        edits.set(0, new UpdateReviewerRequest(eic.role(), eic.displayName(), eic.identityDescription(),
+        edits.set(0, new UpdateReviewerCommand(eic.role(), eic.displayName(), eic.identityDescription(),
                 "forged", eic.reviewFocus()));
-        assertRequestRejected(new UpdateReviewerTeamRequest("Venue", edits), "expertise");
+        assertRequestRejected(new UpdateReviewerTeamCommand("Venue", edits), "expertise");
     }
 
     @Test
     void rejectsRoleChangesAndReviewerRemoval() {
-        List<UpdateReviewerRequest> changed = requests();
-        UpdateReviewerRequest first = changed.get(0);
-        changed.set(0, new UpdateReviewerRequest(ReviewerRole.DOMAIN, first.displayName(),
+        List<UpdateReviewerCommand> changed = requests();
+        UpdateReviewerCommand first = changed.get(0);
+        changed.set(0, new UpdateReviewerCommand(ReviewerRole.DOMAIN, first.displayName(),
                 first.identityDescription(), first.expertise(), first.reviewFocus()));
-        assertRequestRejected(new UpdateReviewerTeamRequest("Venue", changed), "roles");
+        assertRequestRejected(new UpdateReviewerTeamCommand("Venue", changed), "roles");
 
-        List<UpdateReviewerRequest> removed = requests().subList(0, 4);
-        assertRequestRejected(new UpdateReviewerTeamRequest("Venue", removed), "five");
+        List<UpdateReviewerCommand> removed = requests().subList(0, 4);
+        assertRequestRejected(new UpdateReviewerTeamCommand("Venue", removed), "five");
     }
 
     @Test
@@ -91,7 +91,7 @@ class ReviewerTeamServiceTest {
         assertThat(reviews.status).isEqualTo("TEAM_CONFIRMED");
         assertThat(events.confirmed).isEqualTo(1);
         assertThatThrownBy(() -> service.edit(7L, 10L,
-                new UpdateReviewerTeamRequest("Other", requests())))
+                new UpdateReviewerTeamCommand("Other", requests())))
                 .isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.REVIEW_INVALID_STATUS);
@@ -111,15 +111,15 @@ class ReviewerTeamServiceTest {
                 .isEqualTo(ErrorCode.REVIEW_NOT_FOUND);
     }
 
-    private void assertRequestRejected(UpdateReviewerTeamRequest request, String message) {
+    private void assertRequestRejected(UpdateReviewerTeamCommand request, String message) {
         assertThatThrownBy(() -> service.edit(7L, 10L, request))
                 .isInstanceOf(BusinessException.class).hasMessageContaining(message)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.REQUEST_VALIDATION_FAILED);
     }
 
-    private List<UpdateReviewerRequest> requests() {
-        return new ArrayList<>(team().reviewers().stream().map(r -> new UpdateReviewerRequest(r.role(),
+    private List<UpdateReviewerCommand> requests() {
+        return new ArrayList<>(team().reviewers().stream().map(r -> new UpdateReviewerCommand(r.role(),
                 r.displayName(), r.identityDescription(), r.expertise(), r.reviewFocus())).toList());
     }
 

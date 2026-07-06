@@ -42,12 +42,6 @@ public class ReviewEventService {
     }
 
     @Transactional
-    public ReviewEvent publishDelta(long reviewId, String stage, String reviewerRole, String text) {
-        return publish(reviewId, ReviewEventType.REVIEWER_REPORT_DELTA, stage, reviewerRole,
-                objectMapper.createObjectNode().put("text", text));
-    }
-
-    @Transactional
     public ReviewEvent publishFailure(long reviewId, String stage, String message) {
         return publish(reviewId, ReviewEventType.REVIEW_FAILED, stage, null,
                 objectMapper.createObjectNode().put("message", message));

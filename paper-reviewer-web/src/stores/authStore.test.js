@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from './authStore'
 import { authApi } from '../api/authApi'
 
-vi.mock('../api/authApi', () => ({ authApi: { login: vi.fn(), register: vi.fn(), me: vi.fn(), logout: vi.fn() } }))
+vi.mock('../api/authApi', () => ({ authApi: { login: vi.fn(), register: vi.fn(), me: vi.fn() } }))
 
 describe('authStore', () => {
   beforeEach(() => { localStorage.clear(); setActivePinia(createPinia()); vi.clearAllMocks() })

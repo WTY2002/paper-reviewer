@@ -22,21 +22,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ApiResponse.success(authService.register(request));
+        var result = authService.register(request.toCommand());
+        return ApiResponse.success(AuthResponse.of(result.user(), result.token()));
     }
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ApiResponse.success(authService.login(request));
-    }
-
-    @PostMapping("/logout")
-    public ApiResponse<Void> logout() {
-        return ApiResponse.success(null);
+        var result = authService.login(request.toCommand());
+        return ApiResponse.success(AuthResponse.of(result.user(), result.token()));
     }
 
     @GetMapping("/me")
     public ApiResponse<UserResponse> me(@AuthenticationPrincipal AuthenticatedUser principal) {
-        return ApiResponse.success(authService.currentUser(principal));
+        return ApiResponse.success(UserResponse.of(authService.currentUser(principal.userId())));
     }
 }

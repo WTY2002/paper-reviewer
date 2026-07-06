@@ -130,10 +130,6 @@ public class ReviewWorkflowService {
     public List<ReviewReport> getReports(long userId, long reviewId) {
         owned(userId, reviewId); return reports.findByReviewId(reviewId);
     }
-    public void delete(long userId, long reviewId) {
-        if (!reviews.deleteOwnedById(userId, reviewId)) throw new BusinessException(ErrorCode.REVIEW_NOT_FOUND);
-    }
-
     private Review owned(long userId, long reviewId) {
         return reviews.findOwnedById(userId, reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
@@ -141,8 +137,7 @@ public class ReviewWorkflowService {
 
     private void saveReport(long reviewId, String role, String markdown, tools.jackson.databind.JsonNode scores) {
         LocalDateTime now = now();
-        reports.save(new ReviewReport(null, reviewId, role, markdown, scores, null, null,
-                "COMPLETED", now, now));
+        reports.save(new ReviewReport(null, reviewId, role, markdown, scores, "COMPLETED", now, now));
     }
 
     private void fail(Review review, RuntimeException exception) {
